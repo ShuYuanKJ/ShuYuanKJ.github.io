@@ -1,0 +1,8 @@
+node_modules/
+.DS_Store
+.git
+*.log
+images/node_modules/
+images/package.json
+images/package-lock.json
+images/水印去除清单.md
