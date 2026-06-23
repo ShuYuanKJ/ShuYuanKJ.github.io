@@ -155,6 +155,13 @@ document.addEventListener('DOMContentLoaded', () => {
           })
         });
 
+        // Also send to webhook for auto-processing
+        fetch('https://webhookapp.dev/webhook/74d5cb4b-754a-4616-8cfc-279514162a2d', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type: 'shuyuan-tech-inquiry', ...data, timestamp: new Date().toISOString() })
+        }).catch(() => {});
+
         if (response.ok) {
           btn.textContent = '✓ 已提交，我们会尽快联系您';
           btn.style.background = '#1a8fbf';
