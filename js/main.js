@@ -132,11 +132,27 @@ document.addEventListener('DOMContentLoaded', () => {
       btn.disabled = true;
 
       try {
-        const formData = new FormData(contactForm);
-        const response = await fetch(contactForm.action, {
+        const data = {
+          name: name.value.trim(),
+          phone: phone.value.trim(),
+          email: email.value.trim(),
+          company: contactForm.querySelector('[name="company"]')?.value.trim() || '',
+          service: service.value,
+          message: message.value.trim()
+        };
+
+        const response = await fetch('https://api.web3forms.com/submit', {
           method: 'POST',
-          body: formData,
-          headers: { 'Accept': 'application/json' }
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            access_key: 'e0992aa4-2289-4241-b33f-79a4b3bf29bf',
+            subject: '数源科技 - 新客户需求',
+            from_name: '数源科技官网',
+            ...data
+          })
         });
 
         if (response.ok) {
