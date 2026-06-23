@@ -78,24 +78,24 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // ---------- Contact Form Submit with validation ----------
+  // ---------- Contact Form Submit ----------
   const contactForm = document.querySelector('#contact-form');
   if (contactForm) {
-    contactForm.addEventListener('submit', (e) => {
+    contactForm.addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      // Form validation
-      const name = contactForm.querySelector('#name');
-      const email = contactForm.querySelector('#email');
-      const phone = contactForm.querySelector('#phone');
-      const company = contactForm.querySelector('#company');
-      const service = contactForm.querySelector('#service');
-      const message = contactForm.querySelector('#message');
-      let isValid = true;
+      // Basic validation
+      const name = contactForm.querySelector('[name="name"]');
+      const phone = contactForm.querySelector('[name="phone"]');
+      const email = contactForm.querySelector('[name="email"]');
+      const service = contactForm.querySelector('[name="service"]');
+      const message = contactForm.querySelector('[name="message"]');
 
       // Remove previous error styles
       contactForm.querySelectorAll('.form-error').forEach(el => el.remove());
       contactForm.querySelectorAll('.error').forEach(el => el.classList.remove('error'));
+
+      let isValid = true;
 
       if (!name.value.trim()) {
         showError(name, '请填写您的姓名');
@@ -123,30 +123,42 @@ document.addEventListener('DOMContentLoaded', () => {
         isValid = false;
       }
 
-      if (!message.value.trim()) {
-        showError(message, '请填写项目需求描述');
-        isValid = false;
-      }
-
       if (!isValid) return;
 
       const btn = contactForm.querySelector('.form-submit');
+      const feedback = contactForm.querySelector('#form-feedback');
       const originalText = btn.textContent;
       btn.textContent = '提交中...';
       btn.disabled = true;
 
-      // Simulate submission
-      setTimeout(() => {
-        btn.textContent = '✓ 已提交，我们会尽快联系您';
-        btn.style.background = '#1a8fbf';
-        contactForm.reset();
+      try {
+        const formData = new FormData(contactForm);
+        const response = await fetch(contactForm.action, {
+          method: 'POST',
+          body: formData,
+          headers: { 'Accept': 'application/json' }
+        });
 
-        setTimeout(() => {
-          btn.textContent = originalText;
-          btn.style.background = '';
-          btn.disabled = false;
-        }, 3000);
-      }, 1000);
+        if (response.ok) {
+          btn.textContent = '✓ 已提交，我们会尽快联系您';
+          btn.style.background = '#1a8fbf';
+          contactForm.reset();
+          setTimeout(() => {
+            btn.textContent = originalText;
+            btn.style.background = '';
+            btn.disabled = false;
+          }, 4000);
+        } else {
+          throw new Error('提交失败');
+        }
+      } catch (err) {
+        btn.textContent = originalText;
+        btn.disabled = false;
+        feedback.style.display = 'block';
+        feedback.style.color = '#e74c3c';
+        feedback.textContent = '提交失败，请稍后重试或直接发送邮件至 16623313949@163.com';
+        setTimeout(() => { feedback.style.display = 'none'; }, 5000);
+      }
     });
   }
 
